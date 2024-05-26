@@ -416,7 +416,7 @@ with disk_col2.container(border=True):
     components.create_subdirectories_usage_layout(base_directory)
 
 
-top_col = st.container()
+top_col = st.container(border=True)
 with top_col:
     def load_jsonl(file_path):
         data = []
