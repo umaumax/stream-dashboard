@@ -200,7 +200,6 @@ async def load_json_data():
     tasks = {}
     while st.session_state.running:
         files = file_watcher.watch()
-        print(files)
         for file in files:
             status = files[file]['status']
             if status == 'new':
@@ -216,8 +215,6 @@ async def load_json_data():
                 st.error(f"Unknown status '{status}' at '{file}'")
                 continue
             container = containers[file].container(border=True)
-            # task = tasks[file]
-            # with container.container(border=True):
             with container:
                 st.write(file)
                 async with aiofiles.open(file, mode='r') as f:
@@ -249,73 +246,6 @@ async def load_json_data():
                             f'There is no "data" or "ref-data" field at {file}')
                         continue
                     create_component(df, json_data)
-        # with inner_container2.container(border=True):
-            # json_data = {
-            # "data": [
-            # {"x": [1, 2, 3, 4, 5], "y": [2, 13, 5, 7, 11], "z": [1, 2, 5, 6, 7],
-            # "mode": "markers", "name": "Series 1"},
-            # {"x": [2, 3, 4, 5, 6], "y": [3, 4, 36, 8, 12], "z": [10, 12, 15, 16, 17],
-            # "mode": "lines", "name": "Series 2"}
-            # ],
-            # "args": {
-            # "x": 'x',
-            # "y": ['y', 'z'],
-            # "title": "Plotly Chart",
-            # }
-            # }
-            # df = json_data['data']
-            # fig = px.line(
-            # df,
-            # **json_data['args'])
-            # st.plotly_chart(fig)
-
-            # table
-            # df = pd.DataFrame({
-            # 'line': ['hoge', 'fuga'],
-            # 'link': ['a', 'b'],
-            # })
-            # st.write(df)
-
-            # json_data = {
-            # "data": {
-            # "unixtime": [1716125388.0, 1716125389.0, 1716125390.0, 1716125391.0, 1716125392.0],
-            # "memory_percent": [60.0, 10.0, 15.0, 0.0, -15.0],
-            # "hoge": [12.0, 23.0, 10.0, 8.0, 20.0],
-            # },
-            # "px.line": {
-            # "x": "unixtime",
-            # "y": ["memory_percent", "hoge", "MA_2"],
-            # "title": "メモリ使用量の推移"
-            # },
-            # "update_layout": {
-            # "yaxis": {"title": "usage"}
-            # }
-            # }
-            # st.write(json_data['data'])
-            # df = pd.DataFrame(json_data['data'])
-            # df['unixtime'] = pd.to_datetime(
-            # df['unixtime'], unit='s', utc=True).dt.tz_convert('Asia/Tokyo')
-            # # df['Total'] = df.sum(axis=1)
-            # # NOTE: 移動平均線
-            # df['MA_2'] = df['memory_percent'].rolling(window=2).mean()
-            # fig = px.line(
-            # df,
-            # **json_data["px.line"])
-            # fig.update_layout(**json_data["update_layout"])
-            # st.plotly_chart(fig)
-
-            # df = px.data.iris()
-            # print(df)
-            # df = pd.DataFrame({
-            # 'sepal_length': [0.1, 0.4, 1.2, 2.1, -1.9, 1],
-            # 'sepal_width': [1, 2, 4, 8, 10, 3],
-            # 'species': ['a', 'b', 'a', 'c', 'b', 'b'],
-            # })
-            # fig = px.scatter(df, x="sepal_length", y="sepal_width", color="species",
-            # title="Automatic Labels Based on Data Frame Column Names")
-            # st.plotly_chart(fig)
-
-        print(files)
         await asyncio.sleep(1.0)
         cnt += 1
 
@@ -355,13 +285,11 @@ async def async_file_load(target_filepath, decl, container=st.empty()):
         print(f"📒Task async_file_load {target_filepath} was cancelled")
 
 
-def authenticate():
-    # ユーザーの資格情報取得
+def authenticate(config_filepath):
     config = []
-    with open('streamlit-config.yaml') as file:
+    with open(config_filepath) as file:
         config = yaml.load(file, Loader=yaml.loader.SafeLoader)
 
-    # 認証
     authenticator = stauth.Authenticate(
         config['credentials'],
         config['cookie']['name'],
@@ -383,7 +311,7 @@ def authenticate():
         return False
 
 
-if not authenticate():
+if not authenticate('./streamlit-config.yaml'):
     st.stop()
 
 st.session_state.message = ''
@@ -468,7 +396,6 @@ with top_col:
     # 積み上げ
     with tab2:
         fig = go.Figure()
-        # for key in keys[::-1]:  # reverse
         for key in keys:
             print('🔑', key)
             key_df = df[df['key'] == key]
