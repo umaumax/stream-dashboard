@@ -4,10 +4,8 @@ from datetime import datetime
 import asyncio
 import json
 import os
-import subprocess
 
 import aiofiles
-import psutil
 import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
@@ -19,6 +17,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from file_watcher import FileWatcher
+import components
 
 db = TinyDB("db.json")
 
@@ -502,68 +501,9 @@ with col2:
     memory_col = st.container(border=True)
 
 
-@ st.cache_data(ttl=60)
-def get_disk_usage():
-    print('🔥: call get_disk_usage')
-    usage = psutil.disk_usage('/')
-    return usage.total, usage.used, usage.free
-
-
-if st.button("🔄", key='get_disk_usage',
-             on_click=get_disk_usage.clear):
-    get_disk_usage.clear()
-
 disk_col1, disk_col2 = st.columns(2)
 with disk_col1.container(border=True):
-    total, used, free = get_disk_usage()
-
-    used_percentage = (used / total) * 100
-    free_percentage = (free / total) * 100
-
-    st.title("disk space")
-
-    # 75%, 50GB
-    if used_percentage > 75.0 or free < 50.0 * 1024**3:
-        message = ':warning: Disk space is under pressure.'
-        st.warning(message)
-        st.toast(message, icon='🔥')
-
-    st.write(f"total disk usage: {total / (1024**3):.2f} GB")
-    st.write(f"used: {used / (1024**3):.2f} GB ({used_percentage:.2f}%)")
-    st.write(f"free: {free / (1024**3):.2f} GB ({free_percentage:.2f}%)")
-
-    labels = ['Used', 'Free']
-    values = [used, free]
-    colors = ['#ff9999', '#66b3ff']
-
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values, marker_colors=colors,
-                                 hoverinfo='label+percent', textinfo='value')])
-
-    st.plotly_chart(fig)
-
-    df = pd.DataFrame([
-        {'index': 0, 'value': used / (1024**3), 'type': 'used'},
-        {'index': 0, 'value': free / (1024**3), 'type': 'free'},
-    ])
-    # print(df)
-    fig1 = px.bar(
-        df,
-        orientation="h",
-        x='value',
-        y='index',
-        color='type',
-        title="disk usage")
-    fig1.update_traces(width=0.3)
-    fig1.update_layout(
-        xaxis=dict(
-            title='usage[GB]',
-        ),
-        yaxis=dict(
-            title='',
-            showticklabels=False,
-        ),
-    )
-    st.plotly_chart(fig1)
+    components.create_disk_usage_layout()
 
 
 def get_directory_size(directory):
