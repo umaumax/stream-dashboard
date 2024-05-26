@@ -63,7 +63,7 @@ async def get_memory_usage():
         await wait_with_progress_bar(progress_bar, progress_text, memory_interval)
         cnt += 1
 
-print('🌟', st.query_params)
+print('🌟 st.query_params: ', st.query_params)
 
 
 async def load_ls_command():
@@ -281,8 +281,15 @@ async def async_file_load(target_filepath, decl, container=st.empty()):
                 df.reset_index(inplace=True)
                 with container:
                     create_component(df, decl)
-    except asyncio.CancelledError:
-        print(f"📒Task async_file_load {target_filepath} was cancelled")
+    except asyncio.CancelledError as e:
+        print(
+            f"📒[asyncio.CancelledError]Task async_file_load {target_filepath} was cancelled {e}")
+    except st.runtime.scriptrunner.script_runner.StopException as e:
+        print(
+            f"📒[streamlit.StopException]Task async_file_load {target_filepath} was cancelled {e}")
+    except Exception as e:
+        print(
+            f"📒[Exception]Task async_file_load {target_filepath} was cancelled {e}")
 
 
 def authenticate(config_filepath):
@@ -296,7 +303,9 @@ def authenticate(config_filepath):
         config['cookie']['key'],
         config['cookie']['expiry_days'],
     )
+    print(f'[📃] pre login')
     name, authentication_status, user_name = authenticator.login()
+    print(f'[📃] post login')
 
     if authentication_status:
         with st.sidebar:
@@ -312,7 +321,10 @@ def authenticate(config_filepath):
 
 
 if not authenticate('./streamlit-config.yaml'):
+    print(f'[🛑] failed authentication')
     st.stop()
+
+print(f'[✅] authenticated')
 
 st.session_state.message = ''
 
@@ -397,7 +409,6 @@ with top_col:
     with tab2:
         fig = go.Figure()
         for key in keys:
-            print('🔑', key)
             key_df = df[df['key'] == key]
             fig.add_trace(go.Scatter(
                 x=key_df['unixtime'],
