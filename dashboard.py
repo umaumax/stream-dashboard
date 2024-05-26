@@ -121,7 +121,7 @@ async def load_json_data():
     cnt = 0
     inner_container = json_container.empty()
     inner_container2 = json_container.empty()
-    pattern = './dashboard/**/*.json'
+    pattern = './dashboard/**/*.decl.json'
     file_watcher = FileWatcher(pattern)
     while st.session_state.running:
         files = file_watcher.watch()
@@ -131,10 +131,25 @@ async def load_json_data():
                 async with aiofiles.open(file, mode='r') as f:
                     contents = await f.read()
                     json_data = json.loads(contents)
-                    # lines = await f.readlines()
-                    # st.text_area("Output", lines)
-                    # st.code("".join(lines))
-                    df = pd.DataFrame(json_data['data'])
+                    if 'data' in json_data:
+                        df = pd.DataFrame(json_data['data'])
+                    elif 'ref-data' in json_data:
+                        # print('📕file', file)
+                        basedir_path = os.path.dirname(
+                            file if os.path.isabs(file) else os.path.realpath(file))
+                        # print('📕basedir_path', basedir_path)
+                        ref_file = json_data['ref-data']['file']
+                        # print('📕ref_file', ref_file)
+                        ref_file_full_path = os.path.join(
+                            basedir_path, ref_file)
+                        # print('📕ref_file_full_path', ref_file_full_path)
+                        with open(ref_file_full_path) as f:
+                            df = pd.DataFrame(json.load(f))
+                        pass
+                    else:
+                        st.error(
+                            f'There is no "data" or "ref-data" field at {file}')
+                        continue
                     # 🌟自動追加のフィールド
                     if 'unixtime' in df:
                         df['datetime(utc)'] = pd.to_datetime(

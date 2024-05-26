@@ -1,5 +1,8 @@
 {
-  "data": {
+  "ref-data": {
+    "file": "./table.json"
+  },
+  "data2": {
     "line": ["hoge", "fuga"],
     "link": ["a", "b"]
   },
