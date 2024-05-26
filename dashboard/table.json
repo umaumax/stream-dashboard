@@ -1,0 +1,27 @@
+{
+  "data": {
+    "line": ["hoge", "fuga"],
+    "link": ["a", "b"]
+  },
+  "funcs": [
+    {
+      "name": "st.subheader",
+      "args": {
+        "body": "table example",
+        "divider": "rainbow"
+      }
+    },
+    {
+      "name": "st.dataframe",
+      "args": {}
+    },
+    {
+      "name": "st.metric",
+      "args": {
+        "label": "Temperature",
+        "value": "70 °F",
+        "delta": "1.2 °F"
+      }
+    }
+  ]
+}

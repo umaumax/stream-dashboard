@@ -1,0 +1,18 @@
+{
+  "data": {
+    "sepal_length": [0.1, 0.4, 1.2, 2.1, -1.9, 1],
+    "sepal_width": [1, 2, 4, 8, 10, 3],
+    "species": ["a", "b", "a", "c", "b", "b"]
+  },
+  "funcs": [
+    {
+      "name": "px.scatter",
+      "args": {
+        "x": "sepal_length",
+        "y": "sepal_width",
+        "color": "species",
+        "title": "Automatic Labels Based on Data Frame Column Names"
+      }
+    }
+  ]
+}

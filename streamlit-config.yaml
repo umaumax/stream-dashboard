@@ -1,0 +1,9 @@
+credentials:
+  usernames:
+    testuser:
+      name: test user
+      password: $2b$12$g0yUq2/3FKqlL3C066ZUv.C.mgIwnqxfuC171xqm2WqQ9/DeJb8z2 # PassW0rd
+cookie:
+  expiry_days: 999
+  key: streamlit_cookie-signature_key
+  name: streamlit_cookie

@@ -1,0 +1,179 @@
+top - 22:06:15 up 22 days,  4:35,  0 users,  load average: 0.83, 0.37, 0.24
+Tasks:  10 total,   1 running,   9 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.8 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94564 root      20   0   10632   5656   4500 S   0.0   0.1   0:23.97 perl
+94604 root      20   0   10632   5660   4500 S   0.0   0.1   0:13.50 perl
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.00 top
+
+top - 22:06:16 up 22 days,  4:35,  0 users,  load average: 0.84, 0.38, 0.24
+Tasks:  10 total,   2 running,   8 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 14.5 us,  0.0 sy,  0.0 ni, 85.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.8 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 S  48.0   0.1   0:24.45 perl
+94604 root      20   0   10632   5660   4500 R   8.0   0.1   0:13.58 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.00 top
+
+top - 22:06:17 up 22 days,  4:35,  0 users,  load average: 0.84, 0.38, 0.24
+Tasks:  10 total,   2 running,   8 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 23.4 us,  0.2 sy,  0.0 ni, 76.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.8 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94604 root      20   0   10632   5660   4500 S  54.5   0.1   0:14.13 perl
+94564 root      20   0   10632   5656   4500 R  39.6   0.1   0:24.85 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.00 top
+
+top - 22:06:18 up 22 days,  4:35,  0 users,  load average: 0.84, 0.38, 0.24
+Tasks:  10 total,   3 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 26.5 us,  0.0 sy,  0.0 ni, 73.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.7 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 R 100.0   0.1   0:25.86 perl
+94604 root      20   0   10632   5660   4500 R  12.0   0.1   0:14.25 perl
+94641 root      20   0    9688   2836   2484 R   2.0   0.0   0:00.02 top
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+
+top - 22:06:19 up 22 days,  4:35,  0 users,  load average: 0.84, 0.38, 0.24
+Tasks:  10 total,   1 running,   9 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 26.2 us,  1.0 sy,  0.0 ni, 72.0 id,  0.5 wa,  0.0 hi,  0.3 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.7 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 S  52.0   0.1   0:26.39 perl
+94604 root      20   0   10632   5660   4500 S  52.0   0.1   0:14.78 perl
+94641 root      20   0    9688   2836   2484 R   1.0   0.0   0:00.03 top
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+
+top - 22:06:20 up 22 days,  4:35,  0 users,  load average: 0.84, 0.38, 0.24
+Tasks:  10 total,   3 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 38.7 us,  0.5 sy,  0.0 ni, 60.3 id,  0.2 wa,  0.0 hi,  0.2 si,  0.0 st
+MiB Mem :   5924.4 total,    241.7 free,    914.7 used,   4767.9 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.4 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94604 root      20   0   10632   5660   4500 R  78.2   0.1   0:15.57 perl
+94564 root      20   0   10632   5656   4500 R  72.3   0.1   0:27.12 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.97 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.03 top
+
+top - 22:06:21 up 22 days,  4:35,  0 users,  load average: 0.94, 0.41, 0.25
+Tasks:  10 total,   1 running,   9 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 25.7 us,  0.0 sy,  0.0 ni, 74.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    242.2 free,    914.3 used,   4768.0 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.9 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 S  51.0   0.1   0:27.63 perl
+94604 root      20   0   10632   5660   4500 S  51.0   0.1   0:16.08 perl
+  842 jovyan    20   0  720356 122560  19120 S   1.0   2.0  20:20.98 jupyter-lab
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.03 top
+
+top - 22:06:22 up 22 days,  4:35,  0 users,  load average: 0.94, 0.41, 0.25
+Tasks:  10 total,   3 running,   7 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 27.0 us,  0.2 sy,  0.0 ni, 72.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    242.2 free,    914.3 used,   4768.0 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.9 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94604 root      20   0   10632   5660   4500 R  63.4   0.1   0:16.72 perl
+94564 root      20   0   10632   5656   4500 R  45.5   0.1   0:28.09 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.98 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.03 top
+
+top - 22:06:23 up 22 days,  4:35,  0 users,  load average: 0.94, 0.41, 0.25
+Tasks:  10 total,   1 running,   9 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 25.5 us,  0.0 sy,  0.0 ni, 74.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   5924.4 total,    242.2 free,    914.3 used,   4768.0 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4408.9 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 S  50.0   0.1   0:28.59 perl
+94604 root      20   0   10632   5660   4500 S  50.0   0.1   0:17.22 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.98 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.03 top
+
+top - 22:06:24 up 22 days,  4:35,  0 users,  load average: 0.94, 0.41, 0.25
+Tasks:  10 total,   2 running,   8 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 20.6 us,  0.7 sy,  0.0 ni, 78.2 id,  0.2 wa,  0.0 hi,  0.2 si,  0.0 st
+MiB Mem :   5924.4 total,    243.0 free,    913.5 used,   4768.0 buff/cache
+MiB Swap:   1024.0 total,   1021.5 free,      2.5 used.   4409.6 avail Mem 
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+94564 root      20   0   10632   5656   4500 S  37.6   0.1   0:28.97 perl
+94604 root      20   0   10632   5660   4500 R  34.7   0.1   0:17.57 perl
+    1 root      20   0    2204    764    688 S   0.0   0.0   2:25.28 tini
+    7 root      20   0   11036   4144   3652 S   0.0   0.1   0:00.02 sudo
+  842 jovyan    20   0  720356 122560  19120 S   0.0   2.0  20:20.98 jupyter-lab
+  907 jovyan    20   0  763340  66796  17056 S   0.0   1.1   6:46.27 python
+48634 root      20   0    7256   4000   3356 S   0.0   0.1   0:00.52 bash
+92594 root      20   0    7136   3896   3292 S   0.0   0.1   0:00.04 bash
+92963 root      20   0    7136   3904   3296 S   0.0   0.1   0:00.02 bash
+94641 root      20   0    9688   2836   2484 R   0.0   0.0   0:00.03 top

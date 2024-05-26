@@ -1,0 +1,43 @@
+{
+  "data": {
+    "unixtime": [
+      1716125388.0, 1716125389.0, 1716125390.0, 1716125391.0, 1716125392.0
+    ],
+    "memory_percent": [60.0, 10.0, 15.0, 0.0, -15.0],
+    "hoge": [12.0, 23.0, 10.0, 8.0, 20.0]
+  },
+  "funcs": [
+    {
+      "name": "prepro.MA",
+      "args": {
+        "src": "memory_percent",
+        "window": 2,
+        "dst": "memory_percent of MA_2"
+      }
+    },
+    {
+      "name": "px.line",
+      "args": {
+        "x": "datetime(jst)",
+        "y": ["memory_percent", "hoge"],
+        "title": "メモリ使用量の推移"
+      }
+    },
+    {
+      "name": "add_scatter",
+      "args": {
+        "x": "datetime(jst)",
+        "y": "memory_percent of MA_2",
+        "mode": "lines",
+        "line": { "dash": "dash" },
+        "name": "memory_percent of MA_2"
+      }
+    },
+    {
+      "name": "update_layout",
+      "args": {
+        "yaxis": { "title": "usage" }
+      }
+    }
+  ]
+}
