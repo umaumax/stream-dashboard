@@ -1,0 +1,77 @@
+{
+  "ref-data": {
+    "file": "./fizzbuzz.jsonl"
+  },
+  "funcs": [
+    {
+      "name": "plotly.subplots.make_subplots",
+      "args": {}
+    },
+    {
+      "name": "add_bar",
+      "args": {
+        "name": "Fizz",
+        "x": "index",
+        "y": "fizz",
+        "marker": { "color": "rgba(50, 171, 96, 0.6)" }
+      }
+    },
+    {
+      "name": "add_bar",
+      "args": {
+        "name": "Buzz",
+        "x": "index",
+        "y": "buzz",
+        "marker": { "color": "rgba(55, 128, 191, 0.6)" }
+      }
+    },
+    {
+      "name": "add_bar",
+      "args": {
+        "name": "FizzBuzz",
+        "x": "index",
+        "y": "fizzbuzz",
+        "marker": { "color": "rgba(219, 64, 82, 0.6)" }
+      }
+    },
+    {
+      "name": "add_scatter",
+      "args": {
+        "name": "Fizz",
+        "x": "index",
+        "y": "fizz",
+        "mode": "lines+markers",
+        "line": { "color": "green" }
+      }
+    },
+    {
+      "name": "add_scatter",
+      "args": {
+        "name": "Buzz",
+        "x": "index",
+        "y": "buzz",
+        "mode": "lines+markers",
+        "line": { "color": "blue" }
+      }
+    },
+    {
+      "name": "add_scatter",
+      "args": {
+        "name": "FizzBuzz",
+        "x": "index",
+        "y": "fizzbuzz",
+        "mode": "lines+markers",
+        "line": { "color": "red" }
+      }
+    },
+    {
+      "name": "update_layout",
+      "args": {
+        "title": "FizzBuzz Data Visualization",
+        "xaxis_title": "Time",
+        "yaxis_title": "Count",
+        "barmode": "stack"
+      }
+    }
+  ]
+}

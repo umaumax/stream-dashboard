@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import asyncio
 import json
 import os
 
+import uuid
 import aiofiles
 import streamlit as st
 import streamlit_authenticator as stauth
@@ -117,16 +119,106 @@ def update_memory_chart(container, data):
     container.plotly_chart(fig)
 
 
+def create_component(df, decl):
+    # 🌟自動追加のフィールド
+    if 'unixtime' in df:
+        df['datetime(utc)'] = pd.to_datetime(
+            df['unixtime'], unit='s', utc=True)
+        df['datetime(jst)'] = df['datetime(utc)'].dt.tz_convert(
+            'Asia/Tokyo')
+    # df['Total'] = df.sum(axis=1)
+    # NOTE: 移動平均線
+    # field名を見て自動追加できると嬉しい
+    title = decl['title'] if 'title' in decl else 'data'
+
+    # dst: optional if None, {src}(MA_{window})
+    def prepro_MA(df, src=None, window=5, dst=None):
+        if not src:
+            print(f"🔥[prepro_MA] Required arg 'src'")
+            return
+        if not dst:
+            dst = f'{src}(MA_{window})'
+        df[dst] = df[src].rolling(window=window).mean()
+    funcs = decl['funcs']
+    fig = None
+    try:
+        for func in funcs:
+            func_name = func['name']
+            if func_name == "prepro.MA":
+                prepro_MA(df, **func['args'])
+            elif func_name == "st.write":
+                st.write(df)
+            elif func_name == "st.dataframe":
+                st.dataframe(df, **func["args"])
+            elif func_name == "st.subheader":
+                st.subheader(**func["args"])
+            elif func_name == "st.metric":
+                st.metric(**func["args"])
+            elif func_name == "plotly.subplots.make_subplots":
+                fig = plotly.subplots.make_subplots(**func['args'])
+            elif func_name == "px.line":
+                fig = px.line(df, **func['args'])
+            elif func_name == "px.scatter":
+                fig = px.scatter(df, **func['args'])
+            elif func_name == "update_layout":
+                fig.update_layout(**func["args"])
+            elif func_name == "add_scatter":
+                func["args"]["x"] = df[func["args"]["x"]]
+                func["args"]["y"] = df[func["args"]["y"]]
+                fig.add_scatter(**func["args"])
+            elif func_name == "add_bar":
+                func["args"]["x"] = df[func["args"]["x"]]
+                func["args"]["y"] = df[func["args"]["y"]]
+                fig.add_bar(**func["args"])
+            else:
+                st.error(f"🔥Unknown func.name '{func_name}'")
+        if fig:
+            st.plotly_chart(fig)
+        jst_local_time = datetime.now(ZoneInfo("Asia/Tokyo"))
+        if 'index' in df.columns:
+            df.drop(['index'], axis='columns', inplace=True)
+        st.download_button(
+            label="Download data",
+            data=df.to_json(),
+            key=uuid.uuid4(),
+            file_name=f"{jst_local_time.strftime('%Y%m%d_%H%M%S')}-{title}.json",
+            mime="application/json"
+        )
+        with st.expander("data"):
+            st.write(df)
+    except Exception as e:
+        st.error(e)
+        print(f'🔥{e}')
+
+
 async def load_json_data():
     cnt = 0
-    inner_container = json_container.empty()
-    inner_container2 = json_container.empty()
+    inner_container = json_container.container(border=True)
     pattern = './dashboard/**/*.decl.json'
     file_watcher = FileWatcher(pattern)
+    containers = {}
+    tasks = {}
     while st.session_state.running:
         files = file_watcher.watch()
-        with inner_container.container(border=True):
-            for file in files:
+        print(files)
+        for file in files:
+            status = files[file]['status']
+            if status == 'new':
+                containers[file] = inner_container.empty()
+                tasks[file] = None
+            elif status == 'updated':
+                containers[file].empty()
+                tasks[file].cancel()
+                pass
+            elif status == 'unchanged':
+                continue
+            else:
+                st.error(f"Unknown status '{status}' at '{file}'")
+                continue
+            container = containers[file].container(border=True)
+            # task = tasks[file]
+            # with container.container(border=True):
+            with container:
                 st.write(file)
                 async with aiofiles.open(file, mode='r') as f:
                     contents = await f.read()
@@ -134,71 +226,29 @@ async def load_json_data():
                     if 'data' in json_data:
                         df = pd.DataFrame(json_data['data'])
                     elif 'ref-data' in json_data:
-                        # print('📕file', file)
-                        basedir_path = os.path.dirname(
-                            file if os.path.isabs(file) else os.path.realpath(file))
-                        # print('📕basedir_path', basedir_path)
+                        basedir_path = os.path.dirname(file
+                                                       if os.path.isabs(file) else os.path.realpath(file))
                         ref_file = json_data['ref-data']['file']
-                        # print('📕ref_file', ref_file)
                         ref_file_full_path = os.path.join(
                             basedir_path, ref_file)
-                        # print('📕ref_file_full_path', ref_file_full_path)
-                        with open(ref_file_full_path) as f:
-                            df = pd.DataFrame(json.load(f))
-                        pass
+                        _, ext = os.path.splitext(ref_file)
+                        if ext == '.json':
+                            with open(ref_file_full_path) as f:
+                                df = pd.DataFrame(json.load(f))
+                        elif ext == '.jsonl':
+                            task = asyncio.create_task(
+                                async_file_load(ref_file_full_path, json_data, container))
+                            tasks[file] = task
+                            continue
+                        else:
+                            st.error(
+                                f"'{ext}' Extension with unimplemented read function. '{ref_file_full_path}'")
+                            continue
                     else:
                         st.error(
                             f'There is no "data" or "ref-data" field at {file}')
                         continue
-                    # 🌟自動追加のフィールド
-                    if 'unixtime' in df:
-                        df['datetime(utc)'] = pd.to_datetime(
-                            df['unixtime'], unit='s', utc=True)
-                        df['datetime(jst)'] = df['datetime(utc)'].dt.tz_convert(
-                            'Asia/Tokyo')
-                    # df['Total'] = df.sum(axis=1)
-                    # NOTE: 移動平均線
-                    # field名を見て自動追加できると嬉しい
-
-                    # dst: optional if None, {src}(MA_{window})
-                    def prepro_MA(df, src=None, window=5, dst=None):
-                        if not src:
-                            print(f"🔥[prepro_MA] Required arg 'src'")
-                            return
-                        if not dst:
-                            dst = f'{src}(MA_{window})'
-                        df[dst] = df[src].rolling(window=window).mean()
-                    funcs = json_data['funcs']
-                    fig = None
-                    for func in funcs:
-                        func_name = func['name']
-                        # print(func_name)
-                        if func_name == "prepro.MA":
-                            prepro_MA(df, **func['args'])
-                        elif func_name == "st.write":
-                            st.write(df)
-                        elif func_name == "st.dataframe":
-                            st.dataframe(df, **func["args"])
-                        elif func_name == "st.subheader":
-                            st.subheader(**func["args"])
-                        elif func_name == "st.metric":
-                            st.metric(**func["args"])
-                        elif func_name == "px.line":
-                            fig = px.line(df, **func['args'])
-                        elif func_name == "px.scatter":
-                            fig = px.scatter(df, **func['args'])
-                        elif func_name == "update_layout":
-                            fig.update_layout(**func["args"])
-                        elif func_name == "add_scatter":
-                            func["args"]["x"] = df[func["args"]["x"]]
-                            func["args"]["y"] = df[func["args"]["y"]]
-                            fig.add_scatter(**func["args"])
-                        else:
-                            print(f"🔥Unknown func.name '{func_name}'")
-                    if fig:
-                        st.plotly_chart(fig)
-                    with st.expander("data"):
-                        st.write(df)
+                    create_component(df, json_data)
         # with inner_container2.container(border=True):
             # json_data = {
             # "data": [
@@ -270,106 +320,39 @@ async def load_json_data():
         cnt += 1
 
 
-async def load_app_log():
-    cnt = 0
-    app_chart = app_container.empty()
-    data = []
-    tmp_data = []
-    # 🔥初回は読み取れるまで全部読み取る???
-    # 🌟配列のappendではなく、グラフの作成などに時間がかかっている疑惑....
-    # 🌟jsonl拡張子のほうがよさそう
-    async with aiofiles.open('app.log', mode='r') as f:
-        updated = False
+async def async_file_load(target_filepath, decl, container=st.empty()):
+    try:
         cnt = 0
-        while st.session_state.running:
-            # 💡: ファイルのopen状態に限らず、新しい行が読めない場合は''(空の文字列)が返される
-            line = await f.readline()
-            if line:
-                cnt += 1
-                jsonl = json.loads(line)
-                tmp_data.append(jsonl)
-                updated = True
-                if cnt % 1000 > 0:
-                    continue
-            if not updated:
-                await asyncio.sleep(0.01)
-                continue
+        data = []
+        tmp_data = []
+        async with aiofiles.open(target_filepath, mode='r') as f:
             updated = False
-            data += tmp_data
-            tmp_data = []
+            cnt = 0
+            while st.session_state.running:
+                # NOTE: 1000データごともしくは終端データのタイミングで描画する
+                line = await f.readline()
+                if line:
+                    cnt += 1
+                    jsonl = json.loads(line)
+                    tmp_data.append(jsonl)
+                    updated = True
+                    if cnt % 1000 > 0:
+                        continue
+                if not updated:
+                    await asyncio.sleep(0.01)
+                    continue
 
-            df = pd.DataFrame(data)
-            # print(df)
-            # UTC
-            df['time'] = pd.to_datetime(df['unixtime'], unit='s')
-            # JTC
-            df['time'] = pd.to_datetime(
-                df['unixtime'], unit='s', utc=True).dt.tz_convert('Asia/Tokyo')
-            # 🔥軸をcntにする場合とtimeにする場合で切り替えができるとよい???
+                updated = False
+                data += tmp_data
+                tmp_data = []
 
-            # 'index'のカラムが自動的に付与される
-            df.reset_index(inplace=True)
-            print(df)
-
-            # total_fizz = df['fizz'].sum()
-            # total_buzz = df['buzz'].sum()
-            # total_fizzbuzz = df['fizzbuzz'].sum()
-
-            fig = plotly.subplots.make_subplots()
-
-            fig.add_trace(
-                go.Bar(
-                    name='Fizz',
-                    x=df['index'],  # x=df['time'], とする?
-                    y=df['fizz'],
-                    marker=dict(
-                        color='rgba(50, 171, 96, 0.6)')))
-            fig.add_trace(
-                go.Bar(
-                    name='Buzz',
-                    x=df['index'],
-                    y=df['buzz'],
-                    marker=dict(
-                        color='rgba(55, 128, 191, 0.6)')))
-            fig.add_trace(
-                go.Bar(
-                    name='FizzBuzz',
-                    x=df['index'],
-                    y=df['fizzbuzz'],
-                    marker=dict(
-                        color='rgba(219, 64, 82, 0.6)')))
-
-            fig.add_trace(
-                go.Scatter(
-                    x=df['index'],
-                    y=df['fizz'],
-                    mode='lines+markers',
-                    name='Fizz',
-                    line=dict(
-                        color='green')))
-            fig.add_trace(
-                go.Scatter(
-                    x=df['index'],
-                    y=df['buzz'],
-                    mode='lines+markers',
-                    name='Buzz',
-                    line=dict(
-                        color='blue')))
-            fig.add_trace(
-                go.Scatter(
-                    x=df['index'],
-                    y=df['fizzbuzz'],
-                    mode='lines+markers',
-                    name='FizzBuzz',
-                    line=dict(
-                        color='red')))
-
-            fig.update_layout(title='FizzBuzz Data Visualization',
-                              xaxis_title='Time',
-                              yaxis_title='Count',
-                              barmode='stack')
-
-            app_chart.plotly_chart(fig)
+                df = pd.DataFrame(data)
+                # 'index'のカラムを自動的に付与する
+                df.reset_index(inplace=True)
+                with container:
+                    create_component(df, decl)
+    except asyncio.CancelledError:
+        print(f"📒Task async_file_load {target_filepath} was cancelled")
 
 
 def authenticate():
@@ -422,14 +405,25 @@ def setup_sidebar():
 
 setup_sidebar()
 
-disk_col1, disk_col2 = st.columns(2)
-with disk_col1.container(border=True):
-    components.create_disk_usage_layout()
+# disk_col1, disk_col2 = st.columns(2)
+# with disk_col1.container(border=True):
+# components.create_disk_usage_layout()
+#
+# with disk_col2.container(border=True):
+# base_directory = '.'
+# components.create_subdirectories_usage_layout(base_directory)
 
-with disk_col2.container(border=True):
-    base_directory = '.'
-    components.create_subdirectories_usage_layout(base_directory)
+json_col = st.empty()
 
+with json_col:
+    st.subheader("json")
+    json_container = st.container(border=True)
+
+app_col = st.empty()
+
+with app_col:
+    st.subheader("app")
+    app_container = st.container(border=True)
 
 top_col = st.container(border=True)
 with top_col:
@@ -503,18 +497,6 @@ with top_col:
         title='Memory Usage Over Time')
     st.plotly_chart(mem_fig)
 
-json_col = st.empty()
-
-with json_col:
-    st.subheader("json")
-    json_container = st.container(border=True)
-
-app_col = st.empty()
-
-with app_col:
-    st.subheader("app")
-    app_container = st.container(border=True)
-
 col1, col2 = st.columns(2)
 
 with col1:
@@ -537,7 +519,11 @@ async def main():
     tasks = []
     tasks.append(asyncio.create_task(get_memory_usage()))
     tasks.append(asyncio.create_task(load_ls_command()))
-    tasks.append(asyncio.create_task(load_app_log()))
+    # tasks.append(
+    # asyncio.create_task(
+    # async_file_load(
+    # 'fizzbuzz.jsonl',
+    # app_container)))
     tasks.append(asyncio.create_task(load_json_data()))
     await asyncio.gather(*tasks)
 
