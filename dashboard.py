@@ -407,6 +407,15 @@ def setup_sidebar():
 
 setup_sidebar()
 
+disk_col1, disk_col2 = st.columns(2)
+with disk_col1.container(border=True):
+    components.create_disk_usage_layout()
+
+with disk_col2.container(border=True):
+    base_directory = '.'
+    components.create_subdirectories_usage_layout(base_directory)
+
+
 top_col = st.container()
 with top_col:
     def load_jsonl(file_path):
@@ -500,62 +509,6 @@ with col2:
     st.subheader("メモリ使用量")
     memory_col = st.container(border=True)
 
-
-disk_col1, disk_col2 = st.columns(2)
-with disk_col1.container(border=True):
-    components.create_disk_usage_layout()
-
-
-def get_directory_size(directory):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(directory):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            if os.path.exists(fp):
-                total_size += os.path.getsize(fp)
-    return total_size
-
-
-@ st.cache_data(ttl=60)
-def get_subdirectories_size(directory):
-    print('🔥: call get_subdirectories_size')
-    subdirs = [
-        os.path.join(
-            directory,
-            d) for d in os.listdir(directory) if os.path.isdir(
-            os.path.join(
-                directory,
-                d))]
-    sizes = {os.path.basename(subdir): get_directory_size(subdir)
-             for subdir in subdirs}
-    return sizes
-
-
-if st.button("🔄", key='get_subdirectories_size',
-             on_click=get_subdirectories_size.clear):
-    get_subdirectories_size.clear()
-
-
-with disk_col2.container(border=True):
-    main_directory = "/Users/uma/Pictures/"
-    dir_sizes = get_subdirectories_size(main_directory)
-
-    dir_sizes_gb = {k: v / (1024**3) for k, v in dir_sizes.items()}
-
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=list(
-                    dir_sizes_gb.keys()), y=list(
-                        dir_sizes_gb.values()))])
-
-    fig.update_layout(
-        title="ディレクトリごとのディスク使用量",
-        xaxis_title="ディレクトリ",
-        yaxis_title="使用量 (GB)",
-        template="plotly_white"
-    )
-    st.plotly_chart(fig)
 
 with st.container():
     expand = st.expander("My label")

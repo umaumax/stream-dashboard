@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import os
+
 import psutil
 import pandas as pd
 import streamlit as st
@@ -86,3 +88,54 @@ def create_disk_usage_layout():
     # fig.data[0].marker.line.width = 4
     # fig.data[0].marker.line.color = "black"
     st.plotly_chart(fig)
+
+
+def get_directory_size(directory):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            if os.path.exists(fp):
+                total_size += os.path.getsize(fp)
+    return total_size
+
+
+@ st.cache_data(ttl=60)
+def get_subdirectories_size(directory):
+    print('🔥: call get_subdirectories_size')
+    subdirs = [
+        os.path.join(
+            directory,
+            d) for d in os.listdir(directory) if os.path.isdir(
+            os.path.join(
+                directory,
+                d))]
+    sizes = {os.path.basename(subdir): get_directory_size(subdir)
+             for subdir in subdirs}
+    return sizes
+
+
+def create_subdirectories_usage_layout(base_directory):
+    if st.button("🔄", key='get_subdirectories_size',
+                 on_click=get_subdirectories_size.clear):
+        get_subdirectories_size.clear()
+
+    dir_sizes = get_subdirectories_size(base_directory)
+
+    dir_sizes_mb = {k: v / (1024**2) for k, v in dir_sizes.items()}
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=list(
+                    dir_sizes_mb.keys()), y=list(
+                        dir_sizes_mb.values()))])
+
+    fig.update_layout(
+        title="directory usages",
+        xaxis_title="directory name",
+        yaxis_title="usage (MB)",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig)
+    st.write(f"base dir: {base_directory}")
