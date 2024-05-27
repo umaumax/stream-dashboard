@@ -120,9 +120,11 @@ def update_memory_chart(container, data):
 
 
 def create_top_graph(df):
-    st.write(df)
+    # st.write(df)
 
     keys = df['key'].unique()
+    # filter meaningful logs
+    df = df[(df['%CPU'] >= '5.0') | (df['%MEM'] >= '1.0')]
 
     tab1, tab2 = st.tabs(["普通のグラフ", "積み上げグラフ"])
     with tab1:
@@ -245,8 +247,9 @@ def create_component(df, decl):
             file_name=f"{jst_local_time.strftime('%Y%m%d_%H%M%S')}-{title}.json",
             mime="application/json"
         )
-        with st.expander("data"):
-            st.write(df)
+        if len(df.index) < 1000:
+            with st.expander("data"):
+                st.write(df)
     except Exception as e:
         st.error(f'🔥[Exception] {repr(e)}')
         print(f'🔥[Exception] {repr(e)}')
