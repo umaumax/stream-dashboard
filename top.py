@@ -109,11 +109,32 @@ async def parse_top_output(f, base_datetime=None, follow=False) -> Result[dict, 
 
 
 async def stream_top_output_to_jsonl(input_filepath, output_filepath, follow=False) -> Result[type(()), str]:
+    async def write_csv(f_out, df, cnt=0):
+        if cnt == 0:
+            # write header
+            df_first_row = df.iloc[[0]]
+            await f_out.write(df_first_row.to_csv(header=True, index=False))
+        await f_out.write(df.to_csv(header=False, index=False))
+
+    async def write_jsonl(f_out, df, cnt=0):
+        await f_out.write(df.to_json(orient='records'))
+        await f_out.write('\n')
+
+    writer = write_csv
+    _, ext = os.path.splitext(output_filepath)
+    if ext == '.jsonl':
+        writer = write_jsonl
+    elif ext == '.csv':
+        writer = write_csv
+    else:
+        pass
+
     async with aiofiles.open(input_filepath, mode='r') as f_in:
         creation_time_result = get_file_creation_time(input_filepath)
         if creation_time_result.is_err():
             return creation_time_result
         creation_time = creation_time_result.ok()
+        cnt = 0
         async with aiofiles.open(output_filepath, mode='w') as f_out:
             while True:
                 parsed_data_result = await parse_top_output(
@@ -123,12 +144,11 @@ async def stream_top_output_to_jsonl(input_filepath, output_filepath, follow=Fal
                 parsed_data = parsed_data_result.ok()
                 if len(parsed_data) == 0:
                     break
-                print(parsed_data)
                 columns = parsed_data[0].keys()
                 df = pd.DataFrame(parsed_data, columns=columns)
-                print(df)
-                await f_out.write(df.to_json(orient='records') + '\n')
+                await writer(f_out, df, cnt)
                 await f_out.flush()
+                cnt += 1
         return Ok(())
 
 

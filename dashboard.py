@@ -58,8 +58,8 @@ async def get_memory_usage():
             data = memory_usage_table.all()
             update_memory_chart(memory_chart, data)
         except Exception as e:
-            print('🔥 get_memory_usage: ', e)
-            st.error(f'🔥 get_memory_usage: {e}')
+            print('🔥 get_memory_usage: ', repr(e))
+            st.error(f'🔥 get_memory_usage: {repr(e)}')
         await wait_with_progress_bar(progress_bar, progress_text, memory_interval)
         cnt += 1
 
@@ -119,11 +119,70 @@ def update_memory_chart(container, data):
     container.plotly_chart(fig)
 
 
+def create_top_graph(df):
+    st.write(df)
+
+    keys = df['key'].unique()
+
+    tab1, tab2 = st.tabs(["普通のグラフ", "積み上げグラフ"])
+    with tab1:
+        # cpu_fig = go.Figure()
+        # for key in keys:
+        # print('🔑', key)
+        # key_df = df[df['key'] == key]
+        # cpu_fig.add_trace(go.Scatter(
+        # x=key_df['unixtime'],
+        # y=key_df['%CPU'], mode="lines+markers", name=key))
+        cpu_fig = px.line(
+            df,
+            x='unixtime',
+            y='%CPU',
+            color='key',
+            markers=True,
+            title='CPU Usage Over Time')
+        # cpu_fig.update_layout(title='CPU Usage Over Time')
+        st.plotly_chart(cpu_fig)
+
+    # 積み上げ
+    with tab2:
+        fig = go.Figure()
+        for key in keys:
+            key_df = df[df['key'] == key]
+            fig.add_trace(go.Scatter(
+                x=key_df['unixtime'],
+                y=key_df['%CPU'], stackgroup="%CPU", mode="lines+markers", name=key))
+        fig.update_layout(title='Stacked Line Chart',
+                          legend_traceorder='normal',
+                          legend_title_text='key',
+                          xaxis=dict(
+                              title='unixtime',
+                          ),
+                          yaxis=dict(
+                              title='%CPU',
+                          ),
+                          )
+        st.plotly_chart(fig)
+
+    mem_fig = px.line(
+        df,
+        x='unixtime',
+        y='%MEM',
+        color='key',
+        markers=True,
+        title='Memory Usage Over Time')
+    st.plotly_chart(mem_fig)
+
+
 def create_component(df, decl):
     # 🌟自動追加のフィールド
     if 'unixtime' in df:
-        df['datetime(utc)'] = pd.to_datetime(
-            df['unixtime'], unit='s', utc=True)
+        try:
+            df['datetime(utc)'] = pd.to_datetime(
+                df['unixtime'], unit='s', utc=True)
+        except pd._libs.tslibs.np_datetime.OutOfBoundsDatetime as e:
+            df['datetime(utc)'] = pd.to_datetime(
+                df['unixtime'], unit='ms', utc=True)
+            df['unixtime'] = pd.to_datetime(df['unixtime'], unit='ms')
         df['datetime(jst)'] = df['datetime(utc)'].dt.tz_convert(
             'Asia/Tokyo')
     # df['Total'] = df.sum(axis=1)
@@ -170,6 +229,8 @@ def create_component(df, decl):
                 func["args"]["x"] = df[func["args"]["x"]]
                 func["args"]["y"] = df[func["args"]["y"]]
                 fig.add_bar(**func["args"])
+            elif func_name == "top":
+                create_top_graph(df)
             else:
                 st.error(f"🔥Unknown func.name '{func_name}'")
         if fig:
@@ -187,8 +248,8 @@ def create_component(df, decl):
         with st.expander("data"):
             st.write(df)
     except Exception as e:
-        st.error(e)
-        print(f'🔥{e}')
+        st.error(f'🔥[Exception] {repr(e)}')
+        print(f'🔥[Exception] {repr(e)}')
 
 
 async def load_json_data():
@@ -276,7 +337,17 @@ async def async_file_load(target_filepath, decl, container=st.empty()):
                 data += tmp_data
                 tmp_data = []
 
-                df = pd.DataFrame(data)
+                # 1行1データの場合
+                if isinstance(data[0], dict):
+                    df = pd.DataFrame(data)
+                else:
+                    # 1行複数データの場合
+                    df_list = []
+                    for entry in data:
+                        temp_df = pd.DataFrame(entry)
+                        df_list.append(temp_df)
+                    df = pd.concat(df_list, ignore_index=True)
+
                 # 'index'のカラムを自動的に付与する
                 df.reset_index(inplace=True)
                 with container:
@@ -365,6 +436,7 @@ with app_col:
     st.subheader("app")
     app_container = st.container(border=True)
 
+"""
 top_col = st.container(border=True)
 with top_col:
     def load_jsonl(file_path):
@@ -374,7 +446,7 @@ with top_col:
                 data.append(json.loads(line))
         return data
 
-    file_path = 'top.jsonl'  # 🔥適切なパスに変更
+    file_path = './dashboard/top.jsonl'  # 🔥適切なパスに変更
     data = load_jsonl(file_path)
 
     df_list = []
@@ -413,17 +485,16 @@ with top_col:
             fig.add_trace(go.Scatter(
                 x=key_df['unixtime'],
                 y=key_df['%CPU'], stackgroup="%CPU", mode="lines+markers", name=key))
-        fig.update_layout(title='Stacked Line Chart')
-        fig.update_layout(legend_traceorder='normal')
-        fig.update_layout(legend_title_text='key')
-        fig.update_layout(
-            xaxis=dict(
-                title='unixtime',
-            ),
-            yaxis=dict(
-                title='%CPU',
-            ),
-        )
+        fig.update_layout(title='Stacked Line Chart',
+                          legend_traceorder='normal',
+                          legend_title_text='key',
+                          xaxis=dict(
+                              title='unixtime',
+                          ),
+                          yaxis=dict(
+                              title='%CPU',
+                          ),
+                          )
         st.plotly_chart(fig)
 
     mem_fig = px.line(
@@ -434,6 +505,7 @@ with top_col:
         markers=True,
         title='Memory Usage Over Time')
     st.plotly_chart(mem_fig)
+    """
 
 col1, col2 = st.columns(2)
 
@@ -457,11 +529,6 @@ async def main():
     tasks = []
     tasks.append(asyncio.create_task(get_memory_usage()))
     tasks.append(asyncio.create_task(load_ls_command()))
-    # tasks.append(
-    # asyncio.create_task(
-    # async_file_load(
-    # 'fizzbuzz.jsonl',
-    # app_container)))
     tasks.append(asyncio.create_task(load_json_data()))
     await asyncio.gather(*tasks)
 

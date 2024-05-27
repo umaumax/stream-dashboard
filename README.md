@@ -1,4 +1,4 @@
-# dashboard
+# stream-dashboard
 
 ## how to run top.py
 ``` bash
