@@ -1,2 +1,8 @@
+aiofiles
+pandas
+plotly
+psutil
+result
 streamlit
 streamlit-authenticator
+tinydb
