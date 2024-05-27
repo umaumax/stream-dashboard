@@ -47,7 +47,8 @@ def get_top_time(current_date, line) -> Result[datetime, str]:
                        current_minute, current_second, microsecond=0, tzinfo=None))
 
 
-async def parse_top_output(f, base_datetime=None, follow=False) -> Result[dict, str]:
+async def parse_top_output(f, base_datetime=None,
+                           follow=False) -> Result[dict, str]:
     process_head = False
     top_time = None
     processes = []
@@ -66,16 +67,17 @@ async def parse_top_output(f, base_datetime=None, follow=False) -> Result[dict, 
             continue
         line = line.rstrip()
         # for debugging
-        # print(line)
         if line.startswith("top -"):
             top_time_result = get_top_time(base_datetime, line)
             if top_time_result.is_err():
                 return top_time_result
             top_time = top_time_result.ok()
-        if line.startswith("  PID"):
+        if re.search("^ *PID", line):
             process_head = True
             continue
         if not process_head:
+            if line.startswith(" "):
+                return Err(f"🔥Failed to header line. Reached to '{line}'")
             continue
         if process_head and not line:
             # reaeched the end to top output
@@ -108,7 +110,8 @@ async def parse_top_output(f, base_datetime=None, follow=False) -> Result[dict, 
     return Ok(processes)
 
 
-async def stream_top_output_to_jsonl(input_filepath, output_filepath, follow=False) -> Result[type(()), str]:
+async def stream_top_output_to_jsonl(
+        input_filepath, output_filepath, follow=False) -> Result[type(()), str]:
     async def write_csv(f_out, df, cnt=0):
         if cnt == 0:
             # write header
