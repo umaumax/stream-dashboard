@@ -1,0 +1,11 @@
+{
+  "ref-data": {
+    "file": "./top.jsonl"
+  },
+  "funcs": [
+    {
+      "name": "top",
+      "args": {}
+    }
+  ]
+}

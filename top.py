@@ -138,7 +138,7 @@ async def main():
     parser.add_argument(
         '-in',
         '--input-filepath',
-        type=argparse.FileType())
+        type=argparse.FileType(), default='/dev/stdin')
     parser.add_argument(
         '-o',
         '--output-filepath',
