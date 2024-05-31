@@ -271,7 +271,8 @@ async def load_json_data():
                 tasks[file] = None
             elif status == 'updated':
                 containers[file].empty()
-                tasks[file].cancel()
+                if tasks[file]:
+                    tasks[file].cancel()
                 pass
             elif status == 'unchanged':
                 continue
