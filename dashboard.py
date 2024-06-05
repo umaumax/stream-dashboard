@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 import asyncio
 import json
 import os
+import traceback
 
 import uuid
 import aiofiles
@@ -58,8 +59,9 @@ async def get_memory_usage():
             data = memory_usage_table.all()
             update_memory_chart(memory_chart, data)
         except Exception as e:
-            print('🔥 get_memory_usage: ', repr(e))
-            st.error(f'🔥 get_memory_usage: {repr(e)}')
+            error_text = f'🔥 [Exception] get_memory_usage\n{traceback.format_exc()}'
+            print(error_text)
+            st.error(error_text)
         await wait_with_progress_bar(progress_bar, progress_text, memory_interval)
         cnt += 1
 
@@ -251,8 +253,9 @@ def create_component(df, decl):
             with st.expander("data"):
                 st.write(df)
     except Exception as e:
-        st.error(f'🔥[Exception] {repr(e)}')
-        print(f'🔥[Exception] {repr(e)}')
+        error_text = f'🔥[Exception]\n{traceback.format_exc()}'
+        print(error_text)
+        st.error(error_text)
 
 
 async def load_json_data():

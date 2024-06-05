@@ -7,6 +7,7 @@ import subprocess
 import asyncio
 import argparse
 import sys
+import traceback
 
 import pandas as pd
 from result import Ok, Err, Result, is_ok, is_err
@@ -27,7 +28,8 @@ def get_file_creation_time(file_path) -> Result[datetime, str]:
             file_creation_time = datetime.fromtimestamp(stat.st_ctime)
         return Ok(file_creation_time)
     except Exception as e:
-        return Err(f"🔥Error accessing file creation time: {str(e)}")
+        return Err(
+            f"🔥Error accessing file creation time\n{traceback.format_exc()}")
 
 
 def get_top_time(current_date, line) -> Result[datetime, str]:
