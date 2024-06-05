@@ -5,6 +5,18 @@ import os
 import time
 
 
+class FileWatcherConst():
+    NEW = 'new'
+    UPDATED = 'updated'
+    UNCHANGED = 'unchanged'
+    DELETED = 'deleted'
+
+    def __setattr__(self, name, value):
+        if hasattr(self, name):
+            raise AttributeError(f"Cannot reassign constant '{name}'")
+        super().__setattr__(name, value)
+
+
 class FileWatcher:
     def __init__(self, pattern):
         self.pattern = pattern
@@ -21,17 +33,20 @@ class FileWatcher:
 
         for file, mod_time in current_dict.items():
             if file not in prev_dict:
-                status = 'new'
+                status = FileWatcherConst.NEW
             elif prev_dict[file] != mod_time:
                 # Judged as an update even if time is backdated.
-                status = 'updated'
+                status = FileWatcherConst.UPDATED
             else:
-                status = 'unchanged'
+                status = FileWatcherConst.UNCHANGED
             changes[file] = {'status': status, 'mod_time': mod_time}
 
         for file in prev_dict:
             if file not in current_dict:
-                changes[file] = {'status': 'deleted', 'mod_time': None}
+                changes[file] = {
+                    'status': FileWatcherConst.DELETED,
+                    'mod_time': None
+                }
 
         return changes
 

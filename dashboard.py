@@ -18,7 +18,7 @@ import plotly.subplots
 import plotly.express as px
 import plotly.graph_objects as go
 
-from file_watcher import FileWatcher
+from file_watcher import FileWatcher, FileWatcherConst
 import components
 
 db = TinyDB("db.json")
@@ -266,15 +266,18 @@ async def load_json_data():
         files = file_watcher.watch()
         for file in files:
             status = files[file]['status']
-            if status == 'new':
+            if status == FileWatcherConst.NEW:
                 containers[file] = inner_container.empty()
                 tasks[file] = None
-            elif status == 'updated':
+            elif status == FileWatcherConst.UPDATED:
                 containers[file].empty()
                 if tasks[file]:
                     tasks[file].cancel()
                 pass
-            elif status == 'unchanged':
+            elif status == FileWatcherConst.UNCHANGED:
+                continue
+            elif status == FileWatcherConst.DELETED:
+                containers[file].empty()
                 continue
             else:
                 st.error(f"Unknown status '{status}' at '{file}'")
