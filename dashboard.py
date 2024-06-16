@@ -287,10 +287,19 @@ async def load_json_data():
                 continue
             container = containers[file].container(border=True)
             with container:
+                container.empty()
                 st.write(file)
                 async with aiofiles.open(file, mode='r') as f:
                     contents = await f.read()
                     json_data = json.loads(contents)
+                    show_flag = st.checkbox(
+                        "show plots",
+                        value=True,
+                        label_visibility="collapsed",
+                        on_change=cleanup,
+                        key=f'{file}')
+                    if not show_flag:
+                        continue
                     if 'data' in json_data:
                         df = pd.DataFrame(json_data['data'])
                     elif 'ref-data' in json_data:
@@ -319,6 +328,7 @@ async def load_json_data():
                     create_component(df, json_data)
         await asyncio.sleep(1.0)
         cnt += 1
+    await asyncio.gather(*tasks.values())
 
 
 async def async_file_load(target_filepath, decl, container=st.empty()):
@@ -434,104 +444,31 @@ setup_sidebar()
 # base_directory = '.'
 # components.create_subdirectories_usage_layout(base_directory)
 
-json_col = st.empty()
 
-with json_col:
-    st.subheader("json")
-    json_container = st.container(border=True)
+slate = st.empty()
 
-app_col = st.empty()
-
-with app_col:
-    st.subheader("app")
-    app_container = st.container(border=True)
-
-"""
-top_col = st.container(border=True)
-with top_col:
-    def load_jsonl(file_path):
-        data = []
-        with open(file_path, 'r') as file:
-            for line in file:
-                data.append(json.loads(line))
-        return data
-
-    file_path = './dashboard/top.jsonl'  # 🔥適切なパスに変更
-    data = load_jsonl(file_path)
-
-    df_list = []
-    for entry in data:
-        temp_df = pd.DataFrame(entry)
-        df_list.append(temp_df)
-    df = pd.concat(df_list, ignore_index=True)
-
-    df['unixtime'] = pd.to_datetime(df['unixtime'], unit='ms')
-    keys = df['key'].unique()
-
-    tab1, tab2 = st.tabs(["普通のグラフ", "積み上げグラフ"])
-    with tab1:
-        # cpu_fig = go.Figure()
-        # for key in keys:
-        # print('🔑', key)
-        # key_df = df[df['key'] == key]
-        # cpu_fig.add_trace(go.Scatter(
-        # x=key_df['unixtime'],
-        # y=key_df['%CPU'], mode="lines+markers", name=key))
-        cpu_fig = px.line(
-            df,
-            x='unixtime',
-            y='%CPU',
-            color='key',
-            markers=True,
-            title='CPU Usage Over Time')
-        # cpu_fig.update_layout(title='CPU Usage Over Time')
-        st.plotly_chart(cpu_fig)
-
-    # 積み上げ
-    with tab2:
-        fig = go.Figure()
-        for key in keys:
-            key_df = df[df['key'] == key]
-            fig.add_trace(go.Scatter(
-                x=key_df['unixtime'],
-                y=key_df['%CPU'], stackgroup="%CPU", mode="lines+markers", name=key))
-        fig.update_layout(title='Stacked Line Chart',
-                          legend_traceorder='normal',
-                          legend_title_text='key',
-                          xaxis=dict(
-                              title='unixtime',
-                          ),
-                          yaxis=dict(
-                              title='%CPU',
-                          ),
-                          )
-        st.plotly_chart(fig)
-
-    mem_fig = px.line(
-        df,
-        x='unixtime',
-        y='%MEM',
-        color='key',
-        markers=True,
-        title='Memory Usage Over Time')
-    st.plotly_chart(mem_fig)
-    """
-
-col1, col2 = st.columns(2)
-
-with col1:
-    ls_placeholder = st.empty()
-
-with col2:
-    st.subheader("メモリ使用量")
-    memory_col = st.container(border=True)
+body = slate.container(border=True)
 
 
-with st.container():
-    expand = st.expander("My label")
-    expand.write("Inside the expander.")
-    pop = st.popover("Button label")
-    pop.checkbox("Show all")
+def cleanup():
+    print('[🧹] cleanup')
+    slate.empty()
+
+
+json_col = body.empty()
+json_col.empty()
+
+json_col.subheader("json")
+json_container = json_col.container(border=True)
+
+app_col = body.empty()
+app_col.subheader("app")
+app_container = app_col.container(border=True)
+
+col1, col2 = body.columns(2)
+ls_placeholder = col1.empty()
+col2.subheader("memory usage")
+memory_col = col2.container(border=True)
 
 
 async def main():
@@ -540,7 +477,11 @@ async def main():
     tasks.append(asyncio.create_task(get_memory_usage()))
     tasks.append(asyncio.create_task(load_ls_command()))
     tasks.append(asyncio.create_task(load_json_data()))
-    await asyncio.gather(*tasks)
+    try:
+        await asyncio.gather(*tasks)
+    except asyncio.CancelledError as e:
+        print('[main]', e)
+        pass
 
 if __name__ == '__main__':
     if st.session_state.running:
