@@ -422,8 +422,8 @@ st.session_state.message = ''
 
 
 def setup_sidebar():
-    start = st.sidebar.button('start')
-    stop = st.sidebar.button('stop')
+    start = st.sidebar.button('start(TODO: implement)')
+    stop = st.sidebar.button('stop(TODO: implement)')
 
     if 'running' not in st.session_state:
         st.session_state.running = True
