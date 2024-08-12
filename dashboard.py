@@ -91,6 +91,8 @@ async def load_ls_command():
             st.subheader("ls result")
             progress_bar = st.progress(0, text=progress_text)
             st.write(df)
+
+            # examples
             st.dataframe(
                 df,
                 column_config={
@@ -469,21 +471,18 @@ app_col = body.empty()
 app_col.subheader("app")
 app_container = app_col.container(border=True)
 
-col1, col2 = body.columns(2)
-ls_placeholder = col1.empty()
-col2.subheader("memory usage")
-memory_col = col2.container(border=True)
+# col1, col2 = body.columns(2)
+# ls_placeholder = col1.empty()
+# col2.subheader("memory usage")
+# memory_col = col2.container(border=True)
 
 
 async def main():
     print('[💡] main called')
     tasks = []
-    tasks.append(
-        asyncio.create_task(
-            update_table_data(
-                'memory_usage',
-                memory_col)))
-    tasks.append(asyncio.create_task(load_ls_command()))
+    # e.g.
+    # tasks.append(asyncio.create_task( update_table_data( 'memory_usage', memory_col)))
+    # tasks.append(asyncio.create_task(load_ls_command()))
     tasks.append(asyncio.create_task(load_json_data()))
     try:
         await asyncio.gather(*tasks)
