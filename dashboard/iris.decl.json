@@ -10,6 +10,10 @@
       "args": {
         "x": "sepal_length",
         "y": "sepal_width",
+        "trendline": "rolling",
+        "trendline_options": {
+          "window": 2
+        },
         "color": "species",
         "title": "Automatic Labels Based on Data Frame Column Names"
       }
