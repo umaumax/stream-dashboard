@@ -128,21 +128,17 @@ def update_memory_chart(container, data):
 
 
 def create_top_graph(df):
+    # NOTE: for debugging
     # st.write(df)
 
     keys = df['key'].unique()
-    # filter meaningful logs
+    # NOTE: filter meaningful logs
     df = df[(df['%CPU'] >= '5.0') | (df['%MEM'] >= '1.0')]
 
-    tab1, tab2 = st.tabs(["普通のグラフ", "積み上げグラフ"])
-    with tab1:
-        # cpu_fig = go.Figure()
-        # for key in keys:
-        # print('🔑', key)
-        # key_df = df[df['key'] == key]
-        # cpu_fig.add_trace(go.Scatter(
-        # x=key_df['unixtime'],
-        # y=key_df['%CPU'], mode="lines+markers", name=key))
+    # CPU Usage
+    line_chart_tab, stacked_chart_tab = st.tabs(
+        ["Line Chart", "Stacked Chart"])
+    with line_chart_tab:
         cpu_fig = px.line(
             df,
             x='unixtime',
@@ -150,18 +146,16 @@ def create_top_graph(df):
             color='key',
             markers=True,
             title='CPU Usage Over Time')
-        # cpu_fig.update_layout(title='CPU Usage Over Time')
         st.plotly_chart(cpu_fig)
 
-    # 積み上げ
-    with tab2:
+    with stacked_chart_tab:
         fig = go.Figure()
         for key in keys:
             key_df = df[df['key'] == key]
             fig.add_trace(go.Scatter(
                 x=key_df['unixtime'],
                 y=key_df['%CPU'], stackgroup="%CPU", mode="lines+markers", name=key))
-        fig.update_layout(title='Stacked Line Chart',
+        fig.update_layout(title='Stacked Chart',
                           legend_traceorder='normal',
                           legend_title_text='key',
                           xaxis=dict(
@@ -173,6 +167,7 @@ def create_top_graph(df):
                           )
         st.plotly_chart(fig)
 
+    # Memory Usage
     mem_fig = px.line(
         df,
         x='unixtime',
