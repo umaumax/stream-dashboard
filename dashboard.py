@@ -44,25 +44,29 @@ async def wait_with_progress_bar(progress_bar, text, interval):
         await asyncio.sleep(interval)
 
 
-async def get_memory_usage():
-    memory_interval = st.sidebar.slider(
-        'memory usage update interval[s]', 1, 60, 1)
-    memory_usage_table = db.table('memory_usage')
+async def update_table_data(table_name, col):
+    interval_slider = st.sidebar.slider('update interval[s]', 1, 60, 1)
+    table = db.table(table_name)
     cnt = 0
-    progress_bar = memory_col.progress(0, text='')
-    memory_chart = memory_col.empty()
+    progress_bar = col.progress(0, text='')
+    chart = col.empty()
     while st.session_state.running:
         progress_text = "[{}] at {}".format(
             cnt, datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         progress_bar.progress(0, text=progress_text)
         try:
-            data = memory_usage_table.all()
-            update_memory_chart(memory_chart, data)
+            data = table.all()
+            if len(data) == 0:
+                chart.error(f'Not Found Data: {table_name}')
+            if table_name == 'memory_usage':
+                update_memory_chart(chart, data)
+            else:
+                st.error(f'TODO: implement for {table_name}')
         except Exception as e:
-            error_text = f'🔥 [Exception] get_memory_usage\n{traceback.format_exc()}'
+            error_text = f'🔥 [Exception] update_table_data({table_name})\n{traceback.format_exc()}'
             print(error_text)
-            st.error(error_text)
-        await wait_with_progress_bar(progress_bar, progress_text, memory_interval)
+            chart.error(error_text)
+        await wait_with_progress_bar(progress_bar, progress_text, interval_slider)
         cnt += 1
 
 print('🌟 st.query_params: ', st.query_params)
@@ -474,7 +478,11 @@ memory_col = col2.container(border=True)
 async def main():
     print('[💡] main called')
     tasks = []
-    tasks.append(asyncio.create_task(get_memory_usage()))
+    tasks.append(
+        asyncio.create_task(
+            update_table_data(
+                'memory_usage',
+                memory_col)))
     tasks.append(asyncio.create_task(load_ls_command()))
     tasks.append(asyncio.create_task(load_json_data()))
     try:
