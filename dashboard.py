@@ -259,16 +259,29 @@ def create_component(df, decl):
         st.error(error_text)
 
 
-async def load_json_data():
+def transform_link_path(filepath):
+    filepath = filepath.lstrip("./")
+    return filepath.replace("/", "-").replace(".", "-")
+
+
+async def load_json_data(json_container):
     cnt = 0
-    inner_container = json_container.container(border=True)
+    inner_container = json_container.container()
     dashboard_target_path = os.getenv("DASHBOARD_PATH", "./dashboard")
     pattern = f'{dashboard_target_path}/**/*.decl.json'
     file_watcher = FileWatcher(pattern)
     containers = {}
     tasks = {}
+    head_placeholder = inner_container.empty()
+    head_placeholders = []
     while st.session_state.running:
         files = file_watcher.watch()
+        head_placeholder.empty()
+        with head_placeholder.container():
+            st.write('Graph Hyper Links')
+            for file in files:
+                st.markdown(
+                    f"- [{file}](#{transform_link_path(file)})")
         for file in files:
             status = files[file]['status']
             if status == FileWatcherConst.NEW:
@@ -290,7 +303,7 @@ async def load_json_data():
             container = containers[file].container(border=True)
             with container:
                 container.empty()
-                st.write(file)
+                st.header(file)
                 async with aiofiles.open(file, mode='r') as f:
                     contents = await f.read()
                     json_data = json.loads(contents)
@@ -448,8 +461,7 @@ setup_sidebar()
 
 
 slate = st.empty()
-
-body = slate.container(border=True)
+body = slate.container()
 
 
 def cleanup():
@@ -458,14 +470,10 @@ def cleanup():
 
 
 json_col = body.empty()
-json_col.empty()
-
-json_col.subheader("json")
-json_container = json_col.container(border=True)
+json_container = json_col.container()
 
 app_col = body.empty()
-app_col.subheader("app")
-app_container = app_col.container(border=True)
+app_container = app_col.container()
 
 # col1, col2 = body.columns(2)
 # ls_placeholder = col1.empty()
@@ -479,7 +487,7 @@ async def main():
     # e.g.
     # tasks.append(asyncio.create_task( update_table_data( 'memory_usage', memory_col)))
     # tasks.append(asyncio.create_task(load_ls_command()))
-    tasks.append(asyncio.create_task(load_json_data()))
+    tasks.append(asyncio.create_task(load_json_data(json_container)))
     try:
         await asyncio.gather(*tasks)
     except asyncio.CancelledError as e:
