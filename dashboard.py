@@ -262,7 +262,8 @@ def create_component(df, decl):
 async def load_json_data():
     cnt = 0
     inner_container = json_container.container(border=True)
-    pattern = './dashboard/**/*.decl.json'
+    dashboard_target_path = os.getenv("DASHBOARD_PATH", "./dashboard")
+    pattern = f'{dashboard_target_path}/**/*.decl.json'
     file_watcher = FileWatcher(pattern)
     containers = {}
     tasks = {}

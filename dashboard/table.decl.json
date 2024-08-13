@@ -2,7 +2,7 @@
   "ref-data": {
     "file": "./table.json"
   },
-  "data2": {
+  "data-not-used": {
     "line": ["hoge", "fuga"],
     "link": ["a", "b"]
   },
