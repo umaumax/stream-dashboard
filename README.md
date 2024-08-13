@@ -20,6 +20,7 @@ streamlit run ./dashboard.py
 
 ## Ideas
 * [ ] バックグラウンドでコマンドを実行して、グラフ用のプロットデータを作成する仕組みを実装する
+  * [umaumax/flock_wrapper]( https://github.com/umaumax/flock_wrapper/tree/main/ )を利用すると良い
 * [ ] topでプロセスごとだけではなくスレッドごとが見えるようにする
   * [ ] kubernetesのpodごとの項目を追加する
 * [ ] グラフの軸を特定のインクリメントなID or 時刻へ切り替えることができる機能
