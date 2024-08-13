@@ -6,3 +6,5 @@ result
 streamlit
 streamlit-authenticator
 tinydb
+
+pytest

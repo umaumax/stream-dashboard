@@ -15,6 +15,11 @@ streamlit run ./dashboard.py
 ### how to login
 `testuser` / `PassW0rd`
 
+## how to run tests
+``` bash
+pytest ./test.py
+```
+
 ## TODO
 * [ ] グラフの最終更新日時について、現状は絶対日時のみであるがN秒前更新という表示も追加できると良い(現状の仕組みだと常にpython側と通信して書き換える必要があり、これは本来はJSでやりたいが、裏技として、自作のchrome 拡張で実施する解決策もある)
 
