@@ -1,0 +1,146 @@
+{
+    "schemaVersion": 1,
+    "traceEvents": [
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "c10d::barrier",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382280874284,
+            "dur": 1567655,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 1
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "record_param_comms",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382280874291,
+            "dur": 1567647,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 2
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "aten::empty",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382280874333,
+            "dur": 956319,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 3
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "record_param_comms",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382281830683,
+            "dur": 611252,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 4
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "record_param_comms",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382281830685,
+            "dur": 611248,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 5
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "user_annotation",
+            "name": "nccl:all_reduce",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382282441741,
+            "dur": 183,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 6
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "record_param_comms",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382282442058,
+            "dur": 52,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 7
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "c10d::barrier",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382282442248,
+            "dur": 93,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 8
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "record_param_comms",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382282442251,
+            "dur": 89,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 9
+            }
+        },
+        {
+            "ph": "X",
+            "cat": "cpu_op",
+            "name": "aten::empty",
+            "pid": 694985,
+            "tid": 694985,
+            "ts": 1666382282442255,
+            "dur": 21,
+            "args": {
+                "Trace name": "PyTorch Profiler",
+                "Trace iteration": 0,
+                "External id": 10
+            }
+        }
+    ],
+    "traceName": "sample.json"
+}
